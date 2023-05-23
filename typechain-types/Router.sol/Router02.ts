@@ -29,6 +29,7 @@ export interface Router02Interface extends utils.Interface {
     "WETH()": FunctionFragment;
     "addLiquidity(address,address,uint256,uint256,uint256,uint256,address,uint256)": FunctionFragment;
     "addLiquidityETH(address,uint256,uint256,uint256,address,uint256)": FunctionFragment;
+    "admin()": FunctionFragment;
     "factory()": FunctionFragment;
     "getAmountIn(uint256,uint256,uint256)": FunctionFragment;
     "getAmountOut(uint256,uint256,uint256)": FunctionFragment;
@@ -41,6 +42,11 @@ export interface Router02Interface extends utils.Interface {
     "removeLiquidityETHWithPermit(address,uint256,uint256,uint256,address,uint256,bool,uint8,bytes32,bytes32)": FunctionFragment;
     "removeLiquidityETHWithPermitSupportingFeeOnTransferTokens(address,uint256,uint256,uint256,address,uint256,bool,uint8,bytes32,bytes32)": FunctionFragment;
     "removeLiquidityWithPermit(address,address,uint256,uint256,uint256,address,uint256,bool,uint8,bytes32,bytes32)": FunctionFragment;
+    "setAdmin(address)": FunctionFragment;
+    "setFactory(address)": FunctionFragment;
+    "setFeeAddress(address)": FunctionFragment;
+    "setFeeAmount(uint256)": FunctionFragment;
+    "setWeth(address)": FunctionFragment;
     "swapETHForExactTokens(uint256,address[],address,uint256)": FunctionFragment;
     "swapExactETHForTokens(uint256,address[],address,uint256)": FunctionFragment;
     "swapExactETHForTokensSupportingFeeOnTransferTokens(uint256,address[],address,uint256)": FunctionFragment;
@@ -57,6 +63,7 @@ export interface Router02Interface extends utils.Interface {
       | "WETH"
       | "addLiquidity"
       | "addLiquidityETH"
+      | "admin"
       | "factory"
       | "getAmountIn"
       | "getAmountOut"
@@ -69,6 +76,11 @@ export interface Router02Interface extends utils.Interface {
       | "removeLiquidityETHWithPermit"
       | "removeLiquidityETHWithPermitSupportingFeeOnTransferTokens"
       | "removeLiquidityWithPermit"
+      | "setAdmin"
+      | "setFactory"
+      | "setFeeAddress"
+      | "setFeeAmount"
+      | "setWeth"
       | "swapETHForExactTokens"
       | "swapExactETHForTokens"
       | "swapExactETHForTokensSupportingFeeOnTransferTokens"
@@ -105,6 +117,7 @@ export interface Router02Interface extends utils.Interface {
       PromiseOrValue<BigNumberish>
     ]
   ): string;
+  encodeFunctionData(functionFragment: "admin", values?: undefined): string;
   encodeFunctionData(functionFragment: "factory", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "getAmountIn",
@@ -219,6 +232,26 @@ export interface Router02Interface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
+    functionFragment: "setAdmin",
+    values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setFactory",
+    values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setFeeAddress",
+    values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setFeeAmount",
+    values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setWeth",
+    values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "swapETHForExactTokens",
     values: [
       PromiseOrValue<BigNumberish>,
@@ -315,6 +348,7 @@ export interface Router02Interface extends utils.Interface {
     functionFragment: "addLiquidityETH",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "admin", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "factory", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getAmountIn",
@@ -357,6 +391,17 @@ export interface Router02Interface extends utils.Interface {
     functionFragment: "removeLiquidityWithPermit",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "setAdmin", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "setFactory", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "setFeeAddress",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setFeeAmount",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "setWeth", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "swapETHForExactTokens",
     data: BytesLike
@@ -447,6 +492,8 @@ export interface Router02 extends BaseContract {
       deadline: PromiseOrValue<BigNumberish>,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
+
+    admin(overrides?: CallOverrides): Promise<[string]>;
 
     factory(overrides?: CallOverrides): Promise<[string]>;
 
@@ -557,6 +604,31 @@ export interface Router02 extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    setAdmin(
+      _admin: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    setFactory(
+      _factory: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    setFeeAddress(
+      _feesAddress: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    setFeeAmount(
+      _feesAmount: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    setWeth(
+      _weth: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     swapETHForExactTokens(
       amountOut: PromiseOrValue<BigNumberish>,
       path: PromiseOrValue<string>[],
@@ -659,6 +731,8 @@ export interface Router02 extends BaseContract {
     deadline: PromiseOrValue<BigNumberish>,
     overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
+
+  admin(overrides?: CallOverrides): Promise<string>;
 
   factory(overrides?: CallOverrides): Promise<string>;
 
@@ -766,6 +840,31 @@ export interface Router02 extends BaseContract {
     v: PromiseOrValue<BigNumberish>,
     r: PromiseOrValue<BytesLike>,
     s: PromiseOrValue<BytesLike>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  setAdmin(
+    _admin: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  setFactory(
+    _factory: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  setFeeAddress(
+    _feesAddress: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  setFeeAmount(
+    _feesAmount: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  setWeth(
+    _weth: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -884,6 +983,8 @@ export interface Router02 extends BaseContract {
       }
     >;
 
+    admin(overrides?: CallOverrides): Promise<string>;
+
     factory(overrides?: CallOverrides): Promise<string>;
 
     getAmountIn(
@@ -1001,6 +1102,31 @@ export interface Router02 extends BaseContract {
       [BigNumber, BigNumber] & { amountA: BigNumber; amountB: BigNumber }
     >;
 
+    setAdmin(
+      _admin: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setFactory(
+      _factory: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setFeeAddress(
+      _feesAddress: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setFeeAmount(
+      _feesAmount: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setWeth(
+      _weth: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     swapETHForExactTokens(
       amountOut: PromiseOrValue<BigNumberish>,
       path: PromiseOrValue<string>[],
@@ -1106,6 +1232,8 @@ export interface Router02 extends BaseContract {
       deadline: PromiseOrValue<BigNumberish>,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
+
+    admin(overrides?: CallOverrides): Promise<BigNumber>;
 
     factory(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1216,6 +1344,31 @@ export interface Router02 extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    setAdmin(
+      _admin: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    setFactory(
+      _factory: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    setFeeAddress(
+      _feesAddress: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    setFeeAmount(
+      _feesAmount: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    setWeth(
+      _weth: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     swapETHForExactTokens(
       amountOut: PromiseOrValue<BigNumberish>,
       path: PromiseOrValue<string>[],
@@ -1319,6 +1472,8 @@ export interface Router02 extends BaseContract {
       deadline: PromiseOrValue<BigNumberish>,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
+
+    admin(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     factory(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
@@ -1426,6 +1581,31 @@ export interface Router02 extends BaseContract {
       v: PromiseOrValue<BigNumberish>,
       r: PromiseOrValue<BytesLike>,
       s: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setAdmin(
+      _admin: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setFactory(
+      _factory: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setFeeAddress(
+      _feesAddress: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setFeeAmount(
+      _feesAmount: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setWeth(
+      _weth: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 

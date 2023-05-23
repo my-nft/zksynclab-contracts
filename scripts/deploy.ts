@@ -45,8 +45,10 @@ async function main(hre: HardhatRuntimeEnvironment) {
   console.log("factoryInstance: ", factoryInstance.address);
 
   ////////////// deploy router /////////////////
+  const feeAddress = "0x8b7D4ce86Dd986874541E513e38D76168DC3bA9C";
+  const feeAmount = "1000"
 
-  const routerInstance = await routerArtifact.deploy(factoryInstance.address, wethInstance.address);
+  const routerInstance = await routerArtifact.deploy(factoryInstance.address, wethInstance.address, feeAddress, feeAmount);
 
   await routerInstance.deployed();
   
@@ -149,7 +151,14 @@ async function main(hre: HardhatRuntimeEnvironment) {
 
   await tokenApprove.wait();
 
-  console.log("tokenApprove: ", tokenApprove);
+  // const tokenApprove2 = await tokenInstance.approve(
+  //   routerAddress, 
+  //   tokenLiquidity
+  // )
+
+  // await tokenApprove2.wait();
+
+  // console.log("tokenApprove: ", tokenApprove);
 
   // console.log("tokenAddress: ", tokenAddress);
   // console.log("tokenLiquidity: ", tokenLiquidity);
@@ -171,29 +180,31 @@ async function main(hre: HardhatRuntimeEnvironment) {
     } 
   );
   
-  // await addLiquidityETH.wait();
+  await addLiquidityETH.wait();
 
   // console.log("addLiquidityETH: ", addLiquidityETH);
 
-  const swapEthAmount = "100000000000000";
+  const swapEthAmount = "1000000000000000";
 
   const routes = [
     wethAddress,
     tokenInstance.address
   ];
 
-  // const swapExactETHForTokens = await routerInstance.swapExactETHForTokens(
-  //   "0",
-  //   routes,
-  //   deployer.address,
-  //   "100000000000000",
-  //   {
-  //     value: swapEthAmount,
-  //     gasLimit: 500000,
-  //   }
-  // ) 
+  const swapExactETHForTokens = await routerInstance.swapExactETHForTokens(
+    "0",
+    routes,
+    deployer.address,
+    "100000000000000",
+    {
+      value: swapEthAmount,
+      gasLimit: 500000,
+    }
+  ) 
 
-  // await swapExactETHForTokens.wait();
+  await swapExactETHForTokens.wait();
+
+  console.log("swapExactETHForTokens: ", swapExactETHForTokens);
 
 
   // const swapExactETHForTokensSupportingFeeOnTransferTokens = await routerInstance.swapExactETHForTokensSupportingFeeOnTransferTokens(
@@ -209,31 +220,31 @@ async function main(hre: HardhatRuntimeEnvironment) {
 
   // await swapExactETHForTokensSupportingFeeOnTransferTokens.wait();
 
-  // const routes2 = [
-  //   tokenInstance.address,
-  //   wethAddress
-  // ];
+  const routes2 = [
+    tokenInstance.address,
+    wethAddress
+  ];
 
-  // const swapTokensAmount = "10000000000000000000";
+  const swapTokensAmount = "100000000000000000";
 
-  // const tokenApprove2 = await tokenInstance.approve(
-  //   routerAddress, 
-  //   swapTokensAmount
-  // )
+  const tokenApprove2 = await tokenInstance.approve(
+    routerAddress, 
+    swapTokensAmount
+  )
 
-  // await tokenApprove2.wait();
-  // const swapExactTokensForETH = await routerInstance.swapExactTokensForETH(
-  //   swapTokensAmount,
-  //   "0",
-  //   routes2,
-  //   deployer.address,
-  //   "100000000000000",
-  //   {
-  //     gasLimit: 500000,
-  //   }
-  // ) 
+  await tokenApprove2.wait();
+  const swapExactTokensForETH = await routerInstance.swapExactTokensForETH(
+    swapTokensAmount,
+    "0",
+    routes2,
+    deployer.address,
+    "100000000000000",
+    {
+      gasLimit: 500000,
+    }
+  ) 
 
-  // await swapExactETHForTokens.wait();
+  await swapExactETHForTokens.wait();
 
 }
 

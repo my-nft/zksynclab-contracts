@@ -3,6 +3,7 @@
 
 pragma solidity =0.6.6;
 
+import "hardhat/console.sol";
 
 //  IERC20 Contract Interface
 
@@ -646,22 +647,54 @@ pragma solidity =0.6.6;
 contract Router02 is IArrayV1Router02 {
     using SafeMath for uint256;
     using ArrayV1Library for *;
+    address public admin;
 
-    address public immutable override factory;
-    address public immutable override WETH;
+    address payable feesAddress;
+    uint feesAmount;
+
+    address public override factory;
+    address public override WETH;
 
     modifier ensure(uint256 deadline) {
         require(deadline >= block.timestamp, "ArrayV1Router: EXPIRED");
         _;
     }
 
-    constructor(address _factory, address _WETH) public {
+    constructor(address _factory, address _WETH, address payable _feesAddress, uint _feesAmount) public {
         factory = _factory;
         WETH = _WETH;
+        feesAddress = _feesAddress;
+        feesAmount = _feesAmount;
+        admin = msg.sender;
     }
 
     receive() external payable {
         assert(msg.sender == WETH); // only accept ETH via fallback from the WETH contract
+    }
+
+    function setFeeAddress(address payable _feesAddress) public {
+        require(msg.sender == admin, "not allowed");
+        feesAddress = _feesAddress;
+    }
+
+    function setFactory(address _factory) public {
+        require(msg.sender == admin, "not allowed");
+        factory = _factory;
+    }
+
+    function setWeth(address _weth) public {
+        require(msg.sender == admin, "not allowed");
+        WETH = _weth;
+    }
+
+    function setFeeAmount(uint _feesAmount) public {
+        require(msg.sender == admin, "not allowed");
+        feesAmount = _feesAmount;
+    }
+
+    function setAdmin(address _admin) public {
+        require(msg.sender == admin, "not allowed");
+        admin = _admin;
     }
 
     // **** ADD LIQUIDITY ****
@@ -981,6 +1014,22 @@ contract Router02 is IArrayV1Router02 {
         address[] memory path,
         address _to
     ) internal virtual {
+        // uint fees0 = (amounts[0] * feesAmount) / 10000;
+        // uint fees1 = (amounts[1] * feesAmount) / 10000;
+        // amounts[0] = amounts[0] - fees0;
+        // amounts[1] = amounts[1] - fees1;
+        // TransferHelper.safeTransferFrom(
+        //     path[0],
+        //     msg.sender,
+        //     feesAddress,
+        //     fees0
+        // );
+        // TransferHelper.safeTransferFrom(
+        //     path[1],
+        //     msg.sender,
+        //     feesAddress,
+        //     fees1
+        // );
         for (uint256 i; i < path.length - 1; i++) {
             (address input, address output) = (path[i], path[i + 1]);
             (address token0, ) = ArrayV1Library.sortTokens(input, output);
@@ -1067,8 +1116,43 @@ contract Router02 is IArrayV1Router02 {
         ensure(deadline)
         returns (uint256[] memory amounts)
     {
+        // uint fees0 = (amounts[0] * feesAmount) / 10000;
+        // // uint fees1 = (amounts[1] * feesAmount) / 10000;
+        // amounts[0] = amounts[0] - fees0;
+        // amounts[1] = amounts[1] - fees1;
+        // TransferHelper.safeTransferFrom(
+        //     path[0],
+        //     msg.sender,
+        //     feesAddress,
+        //     fees0
+        // );
+        // TransferHelper.safeTransferFrom(
+        //     path[1],
+        //     msg.sender,
+        //     feesAddress,
+        //     fees1
+        // );
+   
         require(path[0] == WETH, "ArrayV1Router: INVALID_PATH");
-        amounts = ArrayV1Library.getAmountsOut(factory, msg.value, path);
+        uint value = msg.value;
+        if (feesAmount > 0){
+            uint fees0 = (value * feesAmount);
+            fees0 = fees0 / 10000;
+            value  = value - fees0;
+            (bool sent,)=feesAddress.call{value: fees0}("");
+        }
+        
+        // amounts = ArrayV1Library.getAmountsOut(factory, msg.value, path);
+        amounts = ArrayV1Library.getAmountsOut(factory, value, path);
+
+        console.log("amounts[0]: ",amounts[0]);
+        console.log("amounts[1]: ",amounts[1]);
+        // uint fees0 = (amounts[0] * feesAmount);
+        // console.log("fees0: ",fees0);
+        // fees0 = fees0 / 10000;
+        // console.log("fees0: ",fees0);
+        // amounts[0] = amounts[0] - fees0;
+        // console.log("amounts[0]: ",amounts[0]);
         require(
             amounts[amounts.length - 1] >= amountOutMin,
             "ArrayV1Router: INSUFFICIENT_OUTPUT_AMOUNT"
@@ -1077,9 +1161,17 @@ contract Router02 is IArrayV1Router02 {
         assert(
             IWETH(WETH).transfer(
                 ArrayV1Library.pairFor(factory, path[0], path[1]),
+                // amounts[0] - fees0
                 amounts[0]
             )
         );
+        // assert(
+        //     IWETH(WETH).transfer(
+        //         feesAddress,
+        //         fees0
+        //     )
+        // );
+        // amounts[0] = amounts[0] - fees0;
         _swap(amounts, path, to);
     }
 
@@ -1126,8 +1218,23 @@ contract Router02 is IArrayV1Router02 {
         ensure(deadline)
         returns (uint256[] memory amounts)
     {
+        uint value = amountIn;
+        if (feesAmount > 0){
+            
+            uint fees0 = (value * feesAmount);
+            fees0 = fees0 / 10000;
+            value  = value - fees0;
+            TransferHelper.safeTransferFrom(
+            path[0],
+            address(this),
+            feesAddress,
+            fees0
+            );
+        }
+
+        // require(path[path.length - 1] == WETH, "ArrayV1Router: INVALID_PATH");
         require(path[path.length - 1] == WETH, "ArrayV1Router: INVALID_PATH");
-        amounts = ArrayV1Library.getAmountsOut(factory, amountIn, path);
+        amounts = ArrayV1Library.getAmountsOut(factory, value, path);
         require(
             amounts[amounts.length - 1] >= amountOutMin,
             "ArrayV1Router: INSUFFICIENT_OUTPUT_AMOUNT"
