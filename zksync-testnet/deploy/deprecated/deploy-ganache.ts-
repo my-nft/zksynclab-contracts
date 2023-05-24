@@ -1,0 +1,185 @@
+import { utils, Wallet } from "zksync-web3";
+import * as ethers from "ethers";
+import { HardhatRuntimeEnvironment } from "hardhat/types";
+import { Deployer } from "@matterlabs/hardhat-zksync-deploy";
+import { Provider } from "zksync-web3";
+
+// An example of a deploy script that will deploy and call a simple contract.
+export default async function (hre: HardhatRuntimeEnvironment) {
+  console.log(`Running deploy script for zkSync labs contract`);
+
+  // Initialize the wallet.
+  const wallet = new Wallet("215f466b3e435d7ce15f03dae4d1ef774eb7598945c41d887c1e70d474fdc2b6");
+  // const wallet = new Wallet("c90c0e71c0692ffac2c2931b8d067d4fc24d04c64194ff560e8b1f8b4d1b6345");
+  // const wallet = new Wallet("3223c0acf42c864c88b59ad2a9db217632c304372e0261bd763966a30b133d1d")
+  const privkey = "215f466b3e435d7ce15f03dae4d1ef774eb7598945c41d887c1e70d474fdc2b6"
+  // Create deployer object and load the artifact of the contract we want to deploy.
+  const deployer = new Deployer(hre, wallet);
+
+  const provider = new Provider("https://testnet.era.zksync.dev"); // using default http://localhost:8545
+  const signer = new ethers.Wallet(privkey, provider)
+  // const factory = await deployer.loadArtifact("CamelotFactory");
+  // const odosRouter = await deployer.loadArtifact("OdosRouter");
+
+  // const signer = new ethers.Wallet(PRIVATE_KEY, provider);
+
+  const pairFactory = await deployer.loadArtifact("ZklabV1Factory");
+  const router = await deployer.loadArtifact("Router02");
+  const weth = await deployer.loadArtifact("WETH9");
+  const token = await deployer.loadArtifact("TestToken");
+
+  // Deposit some funds to L2 in order to be able to perform L2 transactions.
+  // const depositAmount = ethers.utils.parseEther("0.004");
+  // const depositHandle = await deployer.zkWallet.deposit({
+  //   to: deployer.zkWallet.address,
+  //   token: utils.ETH_ADDRESS,
+  //   amount: depositAmount,
+  // });
+  // Wait until the deposit is processed on zkSync
+  // await depositHandle.wait();
+
+  //////////////// deploy WETH /////////////////
+  // const wethContract = await deployer.deploy(
+  //   weth
+  // );
+  //
+  // // Show the contract info.
+  // const wethAddress = wethContract.address;
+  // console.log(`${weth.contractName} was deployed to ${wethAddress}`);
+
+  //////////////// deploy factory /////////////////
+  // const pairFactoryContract = await deployer.deploy(
+  //   pairFactory, ["0x72DDbDc341BBFc00Fe4F3f49695532841965bF0E"]
+  // );
+  //
+  // // Show the contract info.
+  // const pairFactoryAddress = pairFactoryContract.address;
+  // console.log(`${pairFactory.contractName} was deployed to ${pairFactoryAddress}`);
+
+  ////////////// deploy router /////////////////
+  // const routerContract = await deployer.deploy(
+  //   router,
+  //   [
+  //     pairFactoryAddress,
+  //     wethAddress
+  //   ]
+  // );
+  //
+  // // Show the contract info.
+  // const routerAddress = routerContract.address;
+  // console.log(`${router.contractName} was deployed to ${routerAddress}`);
+
+  /////////// deploy token A /////////////////
+  const tokenContract = await deployer.deploy(
+    token, ["Token 01","T01"]
+  );
+
+  // Show the contract info.
+  const tokenAddress = tokenContract.address;
+  console.log(`${token.contractName} was deployed to ${tokenAddress}`);
+
+  /////////// deploy token B /////////////////
+  const tokenContract2 = await deployer.deploy(
+    token, ["Token 02","T02"]
+  );
+
+  // Show the contract info.
+  const tokenAddress2 = tokenContract2.address;
+  console.log(`${token.contractName} was deployed to ${tokenAddress2}`);
+
+  // const pairFactoryAddress = "0xe53b91F647054B9318bc36ceEBaF559338aF80be";
+  // const routerAddress = "0x47Ec88690A597A9a2B27346815b54CA05920bd02";
+  // const wethAddress = "0x424257DF41C6570fFA51a6A1A6d5E6B17b7ebEc8";
+  // const token01Address = "0x861e92AfA1B45B1ccfDec98a8340600aC1eaAb68";
+  // const token02Address = "0x37FCB30CA6656927E3df0d1D2F6A209d0A019257";
+
+  // const factoryInstance = new ethers.Contract(
+  //   pairFactoryAddress,
+  //   pairFactory.abi,
+  //   signer
+  // );
+  //
+  // const routerInstance = new ethers.Contract(
+  //   routerAddress,
+  //   router.abi,
+  //   signer
+  // );
+  //
+  // const tokenInstance = new ethers.Contract(
+  //   tokenAddress,
+  //   token.abi,
+  //   signer
+  // );
+
+  // const wethInstance = new ethers.Contract(
+  //   wethAddress,
+  //   weth.abi,
+  //   signer
+  // );
+
+  // const tokenBalance = await tokenInstance.balanceOf(deployer.zkWallet.address);
+  // console.log("balance of owner: ", tokenBalance)
+  //
+  // const approve = await tokenInstance.approve(routerAddress, "10000000000000000000000");
+  // console.log("approve: ", approve)
+  //
+  // const approveWeth = await wethInstance.approve(routerAddress, "1000000000000000000000");
+  // console.log("approveWeth: ", approveWeth)
+  //
+  // const deposit = await wethInstance.deposit({ value: ethers.utils.parseEther("0.001") });
+  // console.log("deposit: ", approve)
+  //
+  // const createPair = await factoryInstance.createPair(tokenAddress, wethAddress, false);
+  // console.log("createPair: ", createPair)
+
+  // const addLiquidity = await routerInstance.addLiquidity(
+  //   tokenAddress,
+  //   wethAddress,
+  //   false,
+  //   "1000000000000000000000",
+  //   "1000000000000000",
+  //   "100000000000000",
+  //   "10000000000000",
+  //   deployer.zkWallet.address,
+  //   "6000000000000000"
+  // );
+  // console.log("addLiquidity: ", addLiquidity)
+
+  // const addLiquidity = await routerInstance.addLiquidityETH(
+  //   tokenAddress,
+  //   false,
+  //   "100000000000000000000",
+  //   "1000000000000000000",
+  //   "1000000000",
+  //   deployer.zkWallet.address,
+  //   "6000000000000000",
+  //   { value: ethers.utils.parseEther("0.001") }
+  // );
+  // console.log("addLiquidity: ", addLiquidity)
+
+
+  // console.log("tokenAddress: ", tokenAddress);
+  // console.log("wethAddress: ", wethAddress );
+  // const approve2 = await tokenInstance.approve(routerAddress, "10000000000000000000000");
+  // console.log("approve 2: ", approve2)
+  // //
+  // const approveWeth2 = await wethInstance.approve(routerAddress, "1000000000000000000000");
+  // console.log("approveWeth 2: ", approveWeth2)
+
+  // const routes = {
+  //   from: wethAddress,
+  //   to: tokenAddress,
+  //   stable: false
+  // };
+  //
+  // const swapEthForToken = await routerInstance.swapExactETHForTokens(
+  //   "10000",
+  //   [routes],
+  //   deployer.zkWallet.address,
+  //   "6000000000000000",
+  //   { value: ethers.utils.parseEther("0.00001") }
+  // );
+
+  // console.log("swapEthForToken: ", swapEthForToken)
+
+}
