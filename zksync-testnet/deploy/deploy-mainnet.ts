@@ -28,57 +28,40 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   const weth = await deployer.loadArtifact("WETH9");
   const token = await deployer.loadArtifact("TestToken");
 
-  // Deposit some funds to L2 in order to be able to perform L2 transactions.
-  // const depositAmount = ethers.utils.parseEther("0.001");
-  // const depositHandle = await deployer.zkWallet.deposit({
-  //   to: deployer.zkWallet.address,
-  //   token: utils.ETH_ADDRESS,
-  //   amount: depositAmount,
-  // });
-//   Wait until the deposit is processed on zkSync
-  // await depositHandle.wait();
+  const wethAddress = "0x5AEa5775959fBC2557Cc8789bC1bf90A239D9a91";
+  const feeAddress = "0x784C8c8084DAEc060CFc7594b996c14b3407529f";
+  const feeAmount = "10";
 
-  //////////////// deploy WETH /////////////////
-  // const wethContract = await deployer.deploy(
-  //   weth
-  // );
-  
-//   Show the contract info.
-  // const wethAddress = wethContract.address;
-  // console.log(`${weth.contractName} was deployed to ${wethAddress}`);
- 
-//////////////// deploy Token /////////////////
-  const tokenContract2 = await deployer.deploy(
-    token,
-    ["Token4", "TKN4"]
+//   Deposit some funds to L2 in order to be able to perform L2 transactions.
+  const depositAmount = ethers.utils.parseEther("0.001");
+  const depositHandle = await deployer.zkWallet.deposit({
+    to: deployer.zkWallet.address,
+    token: utils.ETH_ADDRESS,
+    amount: depositAmount,
+  });
+//   Wait until the deposit is processed on zkSync
+  await depositHandle.wait();
+
+  ////////////// deploy factory /////////////////
+  const pairFactoryContract = await deployer.deploy(
+    pairFactory, [feeAddress]
   );
   
 //   Show the contract info.
-  const tokenAddress2 = tokenContract2.address;
-  console.log(`Token 4 was deployed to ${tokenAddress2}`);
-  
-
-  ////////////// deploy factory /////////////////
-  // const pairFactoryContract = await deployer.deploy(
-  //   pairFactory, ["0x72DDbDc341BBFc00Fe4F3f49695532841965bF0E"]
-  // );
-  
-//   Show the contract info.
-  // const pairFactoryAddress = pairFactoryContract.address;
-  // console.log(`${pairFactory.contractName} was deployed to ${pairFactoryAddress}`);
+  const pairFactoryAddress = pairFactoryContract.address;
+  console.log(`${pairFactory.contractName} was deployed to ${pairFactoryAddress}`);
 
   //////////// deploy router /////////////////
-  // const feeAddress = "0x8b7D4ce86Dd986874541E513e38D76168DC3bA9C";
-  // const feeAmount = "10";
-  // const routerContract = await deployer.deploy(
-  //   router,
-  //   [
-  //     pairFactoryAddress,
-  //     wethAddress,
-  //     feeAddress,
-  //     feeAmount
-  //   ]
-  // );
+  
+  const routerContract = await deployer.deploy(
+    router,
+    [
+      pairFactoryAddress,
+      wethAddress,
+      feeAddress,
+      feeAmount
+    ]
+  );
   
 //   Show the contract info.
 

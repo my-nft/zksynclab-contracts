@@ -1,0 +1,66 @@
+import { utils, Wallet } from "zksync-web3";
+import * as ethers from "ethers";
+import { HardhatRuntimeEnvironment } from "hardhat/types";
+import { Deployer } from "@matterlabs/hardhat-zksync-deploy";
+import { Provider } from "zksync-web3";
+
+// An example of a deploy script that will deploy and call a simple contract.
+export default async function (hre: HardhatRuntimeEnvironment) {
+  console.log(`Running deploy script for zkSync labs contract`);
+
+  // Initialize the wallet.
+  const wallet = new Wallet("215f466b3e435d7ce15f03dae4d1ef774eb7598945c41d887c1e70d474fdc2b6");
+  // const wallet = new Wallet("c90c0e71c0692ffac2c2931b8d067d4fc24d04c64194ff560e8b1f8b4d1b6345");
+  // const wallet = new Wallet("3223c0acf42c864c88b59ad2a9db217632c304372e0261bd763966a30b133d1d")
+  const privkey = "215f466b3e435d7ce15f03dae4d1ef774eb7598945c41d887c1e70d474fdc2b6"
+  // Create deployer object and load the artifact of the contract we want to deploy.
+  const deployer = new Deployer(hre, wallet);
+
+  const provider = new Provider("https://testnet.era.zksync.dev"); // using default http://localhost:8545
+  const signer = new ethers.Wallet(privkey, provider)
+  // const factory = await deployer.loadArtifact("CamelotFactory");
+  // const odosRouter = await deployer.loadArtifact("OdosRouter");
+
+  // const signer = new ethers.Wallet(PRIVATE_KEY, provider);
+
+  const pairFactory = await deployer.loadArtifact("ZklabV1Factory");
+  const pair = await deployer.loadArtifact("ZklabV1Pair");
+  const router = await deployer.loadArtifact("Router02");
+  const weth = await deployer.loadArtifact("WETH9");
+  const token = await deployer.loadArtifact("TestToken");
+
+
+const hardhat = require("hardhat");
+
+///////////////////// load pair ////////////////////
+  const pairAddress = "0x48d6D827a2BBa05913c458Be2Fd0d2E504cE8146";
+  const pairArtifact = await hardhat.artifacts.readArtifact("ZklabV1Pair");
+
+  const pairContract = new ethers.Contract(
+    pairAddress,
+    pairArtifact["abi"],
+    signer
+  );
+
+
+  const totalSupply = await pairContract.totalSupply();
+  console.log("totalSupply: ", totalSupply);
+
+  const liquidityInPairContract = await pairContract.balanceOf(pairAddress);
+  console.log("liquidityInPairContract: ", liquidityInPairContract);
+
+  const liquidityForUser = await pairContract.balanceOf(signer.address);
+  console.log("liquidityForUser: ", liquidityForUser);
+
+//   const transferLiquidity = await pairContract.transfer(pairAddress, liquidityForUser);
+//   console.log("totalSupply: ", totalSupply);
+
+  const burnLiquidity = await pairContract.burn(signer.address);
+  console.log("burnLiquidity: ", burnLiquidity);
+
+}
+
+//balance zklab token for address 1 before: 31185201562663398951880544
+//balance zklab token for address 1 after : 31185095551299762588243883
+//                                          31185413585390671679130543
+                                  

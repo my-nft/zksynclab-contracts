@@ -3,8 +3,6 @@
 
 pragma solidity =0.6.6;
 
-import "hardhat/console.sol";
-
 //  IERC20 Contract Interface
 
 interface IERC20 {
@@ -54,13 +52,13 @@ interface IWETH {
     function withdraw(uint256) external;
 }
 
-// File: interfaces/IArrayV1Router01.sol
+// File: interfaces/IZklabV1Router01.sol
 
 pragma solidity =0.6.6;
 
-// Array Router01 Contract Interface
+// Zklab Router01 Contract Interface
 
-interface IArrayV1Router01 {
+interface IZklabV1Router01 {
     function factory() external pure returns (address);
 
     function WETH() external pure returns (address);
@@ -219,12 +217,12 @@ interface IArrayV1Router01 {
         returns (uint256[] memory amounts);
 }
 
-// File: interfaces/IArrayV1Router02.sol
+// File: interfaces/IZklabV1Router02.sol
 
 pragma solidity =0.6.6;
 
 
-interface IArrayV1Router02 is IArrayV1Router01 {
+interface IZklabV1Router02 is IZklabV1Router01 {
     function removeLiquidityETHSupportingFeeOnTransferTokens(
         address token,
         uint256 liquidity,
@@ -271,13 +269,13 @@ interface IArrayV1Router02 is IArrayV1Router01 {
     ) external;
 }
 
-// File: interfaces/IArrayV1Factory.sol
+// File: interfaces/IZklabV1Factory.sol
 
 pragma solidity =0.6.6;
 
-//   Array Factory Contract Interface
+//   Zklab Factory Contract Interface
 
-interface IArrayV1Factory {
+interface IZklabV1Factory {
     event PairCreated(
         address indexed token0,
         address indexed token1,
@@ -365,13 +363,13 @@ library TransferHelper {
     }
 }
 
-// File: interfaces/IArrayV1Pair.sol
+// File: interfaces/IZklabV1Pair.sol
 
 pragma solidity =0.6.6;
 
-// Array Pair Contract Interface
+// Zklab Pair Contract Interface
 
-interface IArrayV1Pair {
+interface IZklabV1Pair {
     event Approval(
         address indexed owner,
         address indexed spender,
@@ -500,12 +498,12 @@ library SafeMath {
     }
 }
 
-// File: libraries/ArrayV1Library.sol
+// File: libraries/ZklabV1Library.sol
 
 pragma solidity =0.6.6;
-// ArrayLibrary
+// ZklabLibrary
 
-library ArrayV1Library {
+library ZklabV1Library {
     using SafeMath for uint256;
 
     // returns sorted token addresses, used to handle return values from pairs sorted in this order
@@ -514,11 +512,11 @@ library ArrayV1Library {
         pure
         returns (address token0, address token1)
     {
-        require(tokenA != tokenB, "ArrayV1Library: IDENTICAL_ADDRESSES");
+        require(tokenA != tokenB, "ZklabV1Library: IDENTICAL_ADDRESSES");
         (token0, token1) = tokenA < tokenB
             ? (tokenA, tokenB)
             : (tokenB, tokenA);
-        require(token0 != address(0), "ArrayV1Library: ZERO_ADDRESS");
+        require(token0 != address(0), "ZklabV1Library: ZERO_ADDRESS");
     }
 
     function pairFor(
@@ -526,7 +524,7 @@ library ArrayV1Library {
         address tokenA,
         address tokenB
     ) internal view returns (address pair) {
-        pair = IArrayV1Factory(factory).getPair(tokenA, tokenB);
+        pair = IZklabV1Factory(factory).getPair(tokenA, tokenB);
     }
 
     // fetches and sorts the reserves for a pair
@@ -536,7 +534,7 @@ library ArrayV1Library {
         address tokenB
     ) internal view returns (uint256 reserveA, uint256 reserveB) {
         (address token0, ) = sortTokens(tokenA, tokenB);
-        (uint256 reserve0, uint256 reserve1, ) = IArrayV1Pair(
+        (uint256 reserve0, uint256 reserve1, ) = IZklabV1Pair(
             pairFor(factory, tokenA, tokenB)
         ).getReserves();
         (reserveA, reserveB) = tokenA == token0
@@ -550,10 +548,10 @@ library ArrayV1Library {
         uint256 reserveA,
         uint256 reserveB
     ) internal pure returns (uint256 amountB) {
-        require(amountA > 0, "ArrayV1Library: INSUFFICIENT_AMOUNT");
+        require(amountA > 0, "ZklabV1Library: INSUFFICIENT_AMOUNT");
         require(
             reserveA > 0 && reserveB > 0,
-            "ArrayV1Library: INSUFFICIENT_LIQUIDITY"
+            "ZklabV1Library: INSUFFICIENT_LIQUIDITY"
         );
         amountB = amountA.mul(reserveB) / reserveA;
     }
@@ -564,10 +562,10 @@ library ArrayV1Library {
         uint256 reserveIn,
         uint256 reserveOut
     ) internal pure returns (uint256 amountOut) {
-        require(amountIn > 0, "ArrayV1Library: INSUFFICIENT_INPUT_AMOUNT");
+        require(amountIn > 0, "ZklabV1Library: INSUFFICIENT_INPUT_AMOUNT");
         require(
             reserveIn > 0 && reserveOut > 0,
-            "ArrayV1Library: INSUFFICIENT_LIQUIDITY"
+            "ZklabV1Library: INSUFFICIENT_LIQUIDITY"
         );
         uint256 amountInWithFee = amountIn.mul(995);
         uint256 numerator = amountInWithFee.mul(reserveOut);
@@ -581,10 +579,10 @@ library ArrayV1Library {
         uint256 reserveIn,
         uint256 reserveOut
     ) internal pure returns (uint256 amountIn) {
-        require(amountOut > 0, "ArrayV1Library: INSUFFICIENT_OUTPUT_AMOUNT");
+        require(amountOut > 0, "ZklabV1Library: INSUFFICIENT_OUTPUT_AMOUNT");
         require(
             reserveIn > 0 && reserveOut > 0,
-            "ArrayV1Library: INSUFFICIENT_LIQUIDITY"
+            "ZklabV1Library: INSUFFICIENT_LIQUIDITY"
         );
         uint256 numerator = reserveIn.mul(amountOut).mul(1000);
         uint256 denominator = reserveOut.sub(amountOut).mul(995);
@@ -597,7 +595,7 @@ library ArrayV1Library {
         uint256 amountIn,
         address[] memory path
     ) internal view returns (uint256[] memory amounts) {
-        require(path.length >= 2, "ArrayV1Library: INVALID_PATH");
+        require(path.length >= 2, "ZklabV1Library: INVALID_PATH");
         amounts = new uint256[](path.length);
         amounts[0] = amountIn;
         for (uint256 i; i < path.length - 1; i++) {
@@ -616,7 +614,7 @@ library ArrayV1Library {
         uint256 amountOut,
         address[] memory path
     ) internal view returns (uint256[] memory amounts) {
-        require(path.length >= 2, "ArrayV1Library: INVALID_PATH");
+        require(path.length >= 2, "ZklabV1Library: INVALID_PATH");
         amounts = new uint256[](path.length);
         amounts[amounts.length - 1] = amountOut;
         for (uint256 i = path.length - 1; i > 0; i--) {
@@ -630,7 +628,7 @@ library ArrayV1Library {
     }
 }
 
-// File: ArrayRouter02.sol
+// File: ZklabRouter02.sol
 
 pragma solidity =0.6.6;
 
@@ -642,11 +640,11 @@ pragma solidity =0.6.6;
 
 
 
-// Array Router02 Contract
+// Zklab Router02 Contract
 
-contract Router02 is IArrayV1Router02 {
+contract Router02 is IZklabV1Router02 {
     using SafeMath for uint256;
-    using ArrayV1Library for *;
+    using ZklabV1Library for *;
     address public admin;
 
     address payable feesAddress;
@@ -656,7 +654,7 @@ contract Router02 is IArrayV1Router02 {
     address public override WETH;
 
     modifier ensure(uint256 deadline) {
-        require(deadline >= block.timestamp, "ArrayV1Router: EXPIRED");
+        require(deadline >= block.timestamp, "ZklabV1Router: EXPIRED");
         _;
     }
 
@@ -707,10 +705,10 @@ contract Router02 is IArrayV1Router02 {
         uint256 amountBMin
     ) internal virtual returns (uint256 amountA, uint256 amountB) {
         // create the pair if it doesn't exist yet
-        if (IArrayV1Factory(factory).getPair(tokenA, tokenB) == address(0)) {
-            IArrayV1Factory(factory).createPair(tokenA, tokenB);
+        if (IZklabV1Factory(factory).getPair(tokenA, tokenB) == address(0)) {
+            IZklabV1Factory(factory).createPair(tokenA, tokenB);
         }
-        (uint256 reserveA, uint256 reserveB) = ArrayV1Library.getReserves(
+        (uint256 reserveA, uint256 reserveB) = ZklabV1Library.getReserves(
             factory,
             tokenA,
             tokenB
@@ -719,7 +717,7 @@ contract Router02 is IArrayV1Router02 {
         if (reserveA == 0 && reserveB == 0) {
             (amountA, amountB) = (amountADesired, amountBDesired);
         } else {
-            uint256 amountBOptimal = ArrayV1Library.quote(
+            uint256 amountBOptimal = ZklabV1Library.quote(
                 amountADesired,
                 reserveA,
                 reserveB
@@ -727,11 +725,11 @@ contract Router02 is IArrayV1Router02 {
             if (amountBOptimal <= amountBDesired) {
                 require(
                     amountBOptimal >= amountBMin,
-                    "ArrayV1Router: INSUFFICIENT_B_AMOUNT"
+                    "ZklabV1Router: INSUFFICIENT_B_AMOUNT"
                 );
                 (amountA, amountB) = (amountADesired, amountBOptimal);
             } else {
-                uint256 amountAOptimal = ArrayV1Library.quote(
+                uint256 amountAOptimal = ZklabV1Library.quote(
                     amountBDesired,
                     reserveB,
                     reserveA
@@ -739,7 +737,7 @@ contract Router02 is IArrayV1Router02 {
                 assert(amountAOptimal <= amountADesired);
                 require(
                     amountAOptimal >= amountAMin,
-                    "ArrayV1Router: INSUFFICIENT_A_AMOUNT"
+                    "ZklabV1Router: INSUFFICIENT_A_AMOUNT"
                 );
                 (amountA, amountB) = (amountAOptimal, amountBDesired);
             }
@@ -775,10 +773,10 @@ contract Router02 is IArrayV1Router02 {
             amountAMin,
             amountBMin
         );
-        address pair = ArrayV1Library.pairFor(factory, tokenA, tokenB);
+        address pair = ZklabV1Library.pairFor(factory, tokenA, tokenB);
         TransferHelper.safeTransferFrom(tokenA, msg.sender, pair, amountA);
         TransferHelper.safeTransferFrom(tokenB, msg.sender, pair, amountB);
-        liquidity = IArrayV1Pair(pair).mint(to);
+        liquidity = IZklabV1Pair(pair).mint(to);
 
     }
 
@@ -809,11 +807,11 @@ contract Router02 is IArrayV1Router02 {
             amountTokenMin,
             amountETHMin
         );
-        address pair = ArrayV1Library.pairFor(factory, token, WETH);
+        address pair = ZklabV1Library.pairFor(factory, token, WETH);
         TransferHelper.safeTransferFrom(token, msg.sender, pair, amountToken);
         IWETH(WETH).deposit{value: amountETH}();
         assert(IWETH(WETH).transfer(pair, amountETH));
-        liquidity = IArrayV1Pair(pair).mint(to);
+        liquidity = IZklabV1Pair(pair).mint(to);
         // refund dust eth, if any
         if (msg.value > amountETH)
             TransferHelper.safeTransferETH(msg.sender, msg.value - amountETH);
@@ -835,15 +833,15 @@ contract Router02 is IArrayV1Router02 {
         ensure(deadline)
         returns (uint256 amountA, uint256 amountB)
     {
-        address pair = ArrayV1Library.pairFor(factory, tokenA, tokenB);
-        IArrayV1Pair(pair).transferFrom(msg.sender, pair, liquidity); // send liquidity to pair
-        (uint256 amount0, uint256 amount1) = IArrayV1Pair(pair).burn(to);
-        (address token0, ) = ArrayV1Library.sortTokens(tokenA, tokenB);
+        address pair = ZklabV1Library.pairFor(factory, tokenA, tokenB);
+        IZklabV1Pair(pair).transferFrom(msg.sender, pair, liquidity); // send liquidity to pair
+        (uint256 amount0, uint256 amount1) = IZklabV1Pair(pair).burn(to);
+        (address token0, ) = ZklabV1Library.sortTokens(tokenA, tokenB);
         (amountA, amountB) = tokenA == token0
             ? (amount0, amount1)
             : (amount1, amount0);
-        require(amountA >= amountAMin, "ArrayV1Router: INSUFFICIENT_A_AMOUNT");
-        require(amountB >= amountBMin, "ArrayV1Router: INSUFFICIENT_B_AMOUNT");
+        require(amountA >= amountAMin, "ZklabV1Router: INSUFFICIENT_A_AMOUNT");
+        require(amountB >= amountBMin, "ZklabV1Router: INSUFFICIENT_B_AMOUNT");
     }
 
     function removeLiquidityETH(
@@ -887,9 +885,9 @@ contract Router02 is IArrayV1Router02 {
         bytes32 r,
         bytes32 s
     ) external virtual override returns (uint256 amountA, uint256 amountB) {
-        address pair = ArrayV1Library.pairFor(factory, tokenA, tokenB);
+        address pair = ZklabV1Library.pairFor(factory, tokenA, tokenB);
         uint256 value = approveMax ? uint256(-1) : liquidity;
-        IArrayV1Pair(pair).permit(
+        IZklabV1Pair(pair).permit(
             msg.sender,
             address(this),
             value,
@@ -926,9 +924,9 @@ contract Router02 is IArrayV1Router02 {
         override
         returns (uint256 amountToken, uint256 amountETH)
     {
-        address pair = ArrayV1Library.pairFor(factory, token, WETH);
+        address pair = ZklabV1Library.pairFor(factory, token, WETH);
         uint256 value = approveMax ? uint256(-1) : liquidity;
-        IArrayV1Pair(pair).permit(
+        IZklabV1Pair(pair).permit(
             msg.sender,
             address(this),
             value,
@@ -986,9 +984,9 @@ contract Router02 is IArrayV1Router02 {
         bytes32 r,
         bytes32 s
     ) external virtual override returns (uint256 amountETH) {
-        address pair = ArrayV1Library.pairFor(factory, token, WETH);
+        address pair = ZklabV1Library.pairFor(factory, token, WETH);
         uint256 value = approveMax ? uint256(-1) : liquidity;
-        IArrayV1Pair(pair).permit(
+        IZklabV1Pair(pair).permit(
             msg.sender,
             address(this),
             value,
@@ -1014,33 +1012,17 @@ contract Router02 is IArrayV1Router02 {
         address[] memory path,
         address _to
     ) internal virtual {
-        // uint fees0 = (amounts[0] * feesAmount) / 10000;
-        // uint fees1 = (amounts[1] * feesAmount) / 10000;
-        // amounts[0] = amounts[0] - fees0;
-        // amounts[1] = amounts[1] - fees1;
-        // TransferHelper.safeTransferFrom(
-        //     path[0],
-        //     msg.sender,
-        //     feesAddress,
-        //     fees0
-        // );
-        // TransferHelper.safeTransferFrom(
-        //     path[1],
-        //     msg.sender,
-        //     feesAddress,
-        //     fees1
-        // );
         for (uint256 i; i < path.length - 1; i++) {
             (address input, address output) = (path[i], path[i + 1]);
-            (address token0, ) = ArrayV1Library.sortTokens(input, output);
+            (address token0, ) = ZklabV1Library.sortTokens(input, output);
             uint256 amountOut = amounts[i + 1];
             (uint256 amount0Out, uint256 amount1Out) = input == token0
                 ? (uint256(0), amountOut)
                 : (amountOut, uint256(0));
             address to = i < path.length - 2
-                ? ArrayV1Library.pairFor(factory, output, path[i + 2])
+                ? ZklabV1Library.pairFor(factory, output, path[i + 2])
                 : _to;
-            IArrayV1Pair(ArrayV1Library.pairFor(factory, input, output)).swap(
+            IZklabV1Pair(ZklabV1Library.pairFor(factory, input, output)).swap(
                 amount0Out,
                 amount1Out,
                 to,
@@ -1062,15 +1044,15 @@ contract Router02 is IArrayV1Router02 {
         ensure(deadline)
         returns (uint256[] memory amounts)
     {
-        amounts = ArrayV1Library.getAmountsOut(factory, amountIn, path);
+        amounts = ZklabV1Library.getAmountsOut(factory, amountIn, path);
         require(
             amounts[amounts.length - 1] >= amountOutMin,
-            "ArrayV1Router: INSUFFICIENT_OUTPUT_AMOUNT"
+            "ZklabV1Router: INSUFFICIENT_OUTPUT_AMOUNT"
         );
         TransferHelper.safeTransferFrom(
             path[0],
             msg.sender,
-            ArrayV1Library.pairFor(factory, path[0], path[1]),
+            ZklabV1Library.pairFor(factory, path[0], path[1]),
             amounts[0]
         );
         _swap(amounts, path, to);
@@ -1089,15 +1071,15 @@ contract Router02 is IArrayV1Router02 {
         ensure(deadline)
         returns (uint256[] memory amounts)
     {
-        amounts = ArrayV1Library.getAmountsIn(factory, amountOut, path);
+        amounts = ZklabV1Library.getAmountsIn(factory, amountOut, path);
         require(
             amounts[0] <= amountInMax,
-            "ArrayV1Router: EXCESSIVE_INPUT_AMOUNT"
+            "ZklabV1Router: EXCESSIVE_INPUT_AMOUNT"
         );
         TransferHelper.safeTransferFrom(
             path[0],
             msg.sender,
-            ArrayV1Library.pairFor(factory, path[0], path[1]),
+            ZklabV1Library.pairFor(factory, path[0], path[1]),
             amounts[0]
         );
         _swap(amounts, path, to);
@@ -1116,24 +1098,7 @@ contract Router02 is IArrayV1Router02 {
         ensure(deadline)
         returns (uint256[] memory amounts)
     {
-        // uint fees0 = (amounts[0] * feesAmount) / 10000;
-        // // uint fees1 = (amounts[1] * feesAmount) / 10000;
-        // amounts[0] = amounts[0] - fees0;
-        // amounts[1] = amounts[1] - fees1;
-        // TransferHelper.safeTransferFrom(
-        //     path[0],
-        //     msg.sender,
-        //     feesAddress,
-        //     fees0
-        // );
-        // TransferHelper.safeTransferFrom(
-        //     path[1],
-        //     msg.sender,
-        //     feesAddress,
-        //     fees1
-        // );
-   
-        require(path[0] == WETH, "ArrayV1Router: INVALID_PATH");
+        require(path[0] == WETH, "ZklabV1Router: INVALID_PATH");
         uint value = msg.value;
         if (feesAmount > 0){
             uint fees0 = (value * feesAmount);
@@ -1141,37 +1106,20 @@ contract Router02 is IArrayV1Router02 {
             value  = value - fees0;
             (bool sent,)=feesAddress.call{value: fees0}("");
         }
-        
-        // amounts = ArrayV1Library.getAmountsOut(factory, msg.value, path);
-        amounts = ArrayV1Library.getAmountsOut(factory, value, path);
 
-        console.log("amounts[0]: ",amounts[0]);
-        console.log("amounts[1]: ",amounts[1]);
-        // uint fees0 = (amounts[0] * feesAmount);
-        // console.log("fees0: ",fees0);
-        // fees0 = fees0 / 10000;
-        // console.log("fees0: ",fees0);
-        // amounts[0] = amounts[0] - fees0;
-        // console.log("amounts[0]: ",amounts[0]);
+        amounts = ZklabV1Library.getAmountsOut(factory, value, path);
+
         require(
             amounts[amounts.length - 1] >= amountOutMin,
-            "ArrayV1Router: INSUFFICIENT_OUTPUT_AMOUNT"
+            "ZklabV1Router: INSUFFICIENT_OUTPUT_AMOUNT"
         );
         IWETH(WETH).deposit{value: amounts[0]}();
         assert(
             IWETH(WETH).transfer(
-                ArrayV1Library.pairFor(factory, path[0], path[1]),
-                // amounts[0] - fees0
+                ZklabV1Library.pairFor(factory, path[0], path[1]),
                 amounts[0]
             )
         );
-        // assert(
-        //     IWETH(WETH).transfer(
-        //         feesAddress,
-        //         fees0
-        //     )
-        // );
-        // amounts[0] = amounts[0] - fees0;
         _swap(amounts, path, to);
     }
 
@@ -1188,16 +1136,16 @@ contract Router02 is IArrayV1Router02 {
         ensure(deadline)
         returns (uint256[] memory amounts)
     {
-        require(path[path.length - 1] == WETH, "ArrayV1Router: INVALID_PATH");
-        amounts = ArrayV1Library.getAmountsIn(factory, amountOut, path);
+        require(path[path.length - 1] == WETH, "ZklabV1Router: INVALID_PATH");
+        amounts = ZklabV1Library.getAmountsIn(factory, amountOut, path);
         require(
             amounts[0] <= amountInMax,
-            "ArrayV1Router: EXCESSIVE_INPUT_AMOUNT"
+            "ZklabV1Router: EXCESSIVE_INPUT_AMOUNT"
         );
         TransferHelper.safeTransferFrom(
             path[0],
             msg.sender,
-            ArrayV1Library.pairFor(factory, path[0], path[1]),
+            ZklabV1Library.pairFor(factory, path[0], path[1]),
             amounts[0]
         );
         _swap(amounts, path, address(this));
@@ -1232,17 +1180,17 @@ contract Router02 is IArrayV1Router02 {
             );
         }
 
-        // require(path[path.length - 1] == WETH, "ArrayV1Router: INVALID_PATH");
-        require(path[path.length - 1] == WETH, "ArrayV1Router: INVALID_PATH");
-        amounts = ArrayV1Library.getAmountsOut(factory, value, path);
+        // require(path[path.length - 1] == WETH, "ZklabV1Router: INVALID_PATH");
+        require(path[path.length - 1] == WETH, "ZklabV1Router: INVALID_PATH");
+        amounts = ZklabV1Library.getAmountsOut(factory, value, path);
         require(
             amounts[amounts.length - 1] >= amountOutMin,
-            "ArrayV1Router: INSUFFICIENT_OUTPUT_AMOUNT"
+            "ZklabV1Router: INSUFFICIENT_OUTPUT_AMOUNT"
         );
         TransferHelper.safeTransferFrom(
             path[0],
             msg.sender,
-            ArrayV1Library.pairFor(factory, path[0], path[1]),
+            ZklabV1Library.pairFor(factory, path[0], path[1]),
             amounts[0]
         );
         _swap(amounts, path, address(this));
@@ -1263,16 +1211,16 @@ contract Router02 is IArrayV1Router02 {
         ensure(deadline)
         returns (uint256[] memory amounts)
     {
-        require(path[0] == WETH, "ArrayV1Router: INVALID_PATH");
-        amounts = ArrayV1Library.getAmountsIn(factory, amountOut, path);
+        require(path[0] == WETH, "ZklabV1Router: INVALID_PATH");
+        amounts = ZklabV1Library.getAmountsIn(factory, amountOut, path);
         require(
             amounts[0] <= msg.value,
-            "ArrayV1Router: EXCESSIVE_INPUT_AMOUNT"
+            "ZklabV1Router: EXCESSIVE_INPUT_AMOUNT"
         );
         IWETH(WETH).deposit{value: amounts[0]}();
         assert(
             IWETH(WETH).transfer(
-                ArrayV1Library.pairFor(factory, path[0], path[1]),
+                ZklabV1Library.pairFor(factory, path[0], path[1]),
                 amounts[0]
             )
         );
@@ -1290,9 +1238,9 @@ contract Router02 is IArrayV1Router02 {
     ) internal virtual {
         for (uint256 i; i < path.length - 1; i++) {
             (address input, address output) = (path[i], path[i + 1]);
-            (address token0, ) = ArrayV1Library.sortTokens(input, output);
-            IArrayV1Pair pair = IArrayV1Pair(
-                ArrayV1Library.pairFor(factory, input, output)
+            (address token0, ) = ZklabV1Library.sortTokens(input, output);
+            IZklabV1Pair pair = IZklabV1Pair(
+                ZklabV1Library.pairFor(factory, input, output)
             );
             uint256 amountInput;
             uint256 amountOutput;
@@ -1305,7 +1253,7 @@ contract Router02 is IArrayV1Router02 {
                 amountInput = IERC20(input).balanceOf(address(pair)).sub(
                     reserveInput
                 );
-                amountOutput = ArrayV1Library.getAmountOut(
+                amountOutput = ZklabV1Library.getAmountOut(
                     amountInput,
                     reserveInput,
                     reserveOutput
@@ -1315,7 +1263,7 @@ contract Router02 is IArrayV1Router02 {
                 ? (uint256(0), amountOutput)
                 : (amountOutput, uint256(0));
             address to = i < path.length - 2
-                ? ArrayV1Library.pairFor(factory, output, path[i + 2])
+                ? ZklabV1Library.pairFor(factory, output, path[i + 2])
                 : _to;
             pair.swap(amount0Out, amount1Out, to, new bytes(0));
         }
@@ -1331,7 +1279,7 @@ contract Router02 is IArrayV1Router02 {
         TransferHelper.safeTransferFrom(
             path[0],
             msg.sender,
-            ArrayV1Library.pairFor(factory, path[0], path[1]),
+            ZklabV1Library.pairFor(factory, path[0], path[1]),
             amountIn
         );
         uint256 balanceBefore = IERC20(path[path.length - 1]).balanceOf(to);
@@ -1339,7 +1287,7 @@ contract Router02 is IArrayV1Router02 {
         require(
             IERC20(path[path.length - 1]).balanceOf(to).sub(balanceBefore) >=
                 amountOutMin,
-            "ArrayV1Router: INSUFFICIENT_OUTPUT_AMOUNT"
+            "ZklabV1Router: INSUFFICIENT_OUTPUT_AMOUNT"
         );
     }
 
@@ -1349,12 +1297,12 @@ contract Router02 is IArrayV1Router02 {
         address to,
         uint256 deadline
     ) external payable virtual override ensure(deadline) {
-        require(path[0] == WETH, "ArrayV1Router: INVALID_PATH");
+        require(path[0] == WETH, "ZklabV1Router: INVALID_PATH");
         uint256 amountIn = msg.value;
         IWETH(WETH).deposit{value: amountIn}();
         assert(
             IWETH(WETH).transfer(
-                ArrayV1Library.pairFor(factory, path[0], path[1]),
+                ZklabV1Library.pairFor(factory, path[0], path[1]),
                 amountIn
             )
         );
@@ -1363,7 +1311,7 @@ contract Router02 is IArrayV1Router02 {
         require(
             IERC20(path[path.length - 1]).balanceOf(to).sub(balanceBefore) >=
                 amountOutMin,
-            "ArrayV1Router: INSUFFICIENT_OUTPUT_AMOUNT"
+            "ZklabV1Router: INSUFFICIENT_OUTPUT_AMOUNT"
         );
     }
 
@@ -1374,18 +1322,18 @@ contract Router02 is IArrayV1Router02 {
         address to,
         uint256 deadline
     ) external virtual override ensure(deadline) {
-        require(path[path.length - 1] == WETH, "ArrayV1Router: INVALID_PATH");
+        require(path[path.length - 1] == WETH, "ZklabV1Router: INVALID_PATH");
         TransferHelper.safeTransferFrom(
             path[0],
             msg.sender,
-            ArrayV1Library.pairFor(factory, path[0], path[1]),
+            ZklabV1Library.pairFor(factory, path[0], path[1]),
             amountIn
         );
         _swapSupportingFeeOnTransferTokens(path, address(this));
         uint256 amountOut = IERC20(WETH).balanceOf(address(this));
         require(
             amountOut >= amountOutMin,
-            "ArrayV1Router: INSUFFICIENT_OUTPUT_AMOUNT"
+            "ZklabV1Router: INSUFFICIENT_OUTPUT_AMOUNT"
         );
         IWETH(WETH).withdraw(amountOut);
         TransferHelper.safeTransferETH(to, amountOut);
@@ -1397,7 +1345,7 @@ contract Router02 is IArrayV1Router02 {
         uint256 reserveA,
         uint256 reserveB
     ) public pure virtual override returns (uint256 amountB) {
-        return ArrayV1Library.quote(amountA, reserveA, reserveB);
+        return ZklabV1Library.quote(amountA, reserveA, reserveB);
     }
 
     function getAmountOut(
@@ -1405,7 +1353,7 @@ contract Router02 is IArrayV1Router02 {
         uint256 reserveIn,
         uint256 reserveOut
     ) public view virtual override returns (uint256 amountOut) {
-        return ArrayV1Library.getAmountOut(amountIn, reserveIn, reserveOut);
+        return ZklabV1Library.getAmountOut(amountIn, reserveIn, reserveOut);
     }
 
     function getAmountIn(
@@ -1413,7 +1361,7 @@ contract Router02 is IArrayV1Router02 {
         uint256 reserveIn,
         uint256 reserveOut
     ) public pure virtual override returns (uint256 amountIn) {
-        return ArrayV1Library.getAmountIn(amountOut, reserveIn, reserveOut);
+        return ZklabV1Library.getAmountIn(amountOut, reserveIn, reserveOut);
     }
 
     function getAmountsOut(uint256 amountIn, address[] memory path)
@@ -1423,7 +1371,7 @@ contract Router02 is IArrayV1Router02 {
         override
         returns (uint256[] memory amounts)
     {
-        return ArrayV1Library.getAmountsOut(factory, amountIn, path);
+        return ZklabV1Library.getAmountsOut(factory, amountIn, path);
     }
 
     function getAmountsIn(uint256 amountOut, address[] memory path)
@@ -1433,6 +1381,6 @@ contract Router02 is IArrayV1Router02 {
         override
         returns (uint256[] memory amounts)
     {
-        return ArrayV1Library.getAmountsIn(factory, amountOut, path);
+        return ZklabV1Library.getAmountsIn(factory, amountOut, path);
     }
 }
