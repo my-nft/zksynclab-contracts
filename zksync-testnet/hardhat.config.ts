@@ -24,7 +24,7 @@ module.exports = {
       url: "http://127.0.0.1:8545",
       zksync: true,
       accounts: [
-        `215f466b3e435d7ce15f03dae4d1ef774eb7598945c41d887c1e70d474fdc2b6`,
+        ``,
       ],
     }
   },
